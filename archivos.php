@@ -12,7 +12,7 @@
     $directorio = "descargas/";
     $archivos_encontrados = [];
 
-    $archivos = scandir($directorio);
+    $archivos = array_diff(scandir($directorio), array('.', '..'));
     
     foreach($archivos as $archivo){
         $archivos_encontrados[] = $archivo;
