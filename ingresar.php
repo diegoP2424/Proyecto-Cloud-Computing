@@ -15,61 +15,48 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conexion = mysqli_connect("localhost", "root", "", "proyecto_cc", 3306);
 
-        if (!$conexion) {
-            $mensaje = "Error crítico: No se pudo conectar a la BD.";
-            $tipo_mensaje = "error";
-        } else {
-            $nombre = trim($_POST["nombre"]);
-            $rol = $_POST["rol"];
-            $descripcion = trim($_POST["descripcion"]);
+        $nombre = trim($_POST["nombre"]);
+        $rol = $_POST["rol"];
+        $descripcion = trim($_POST["descripcion"]);
+        
+        $nombre_imagen_final = "default.jpg"; 
+        $directorio_destino = "img/";
+        $error_subida = false;
+
+        if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
+            // esto pa extraer la extension
+            $extension = strtolower(pathinfo($_FILES["imagen"]["name"], PATHINFO_EXTENSION));
             
-            $nombre_imagen_final = "default.jpg"; 
-            $directorio_destino = "img/";
-            $error_subida = false;
+            $nombre_unico = uniqid() . "." . $extension;
+            $ruta_final = $directorio_destino . $nombre_unico;
 
-            if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
-                
-                $extension = strtolower(pathinfo($_FILES["imagen"]["name"], PATHINFO_EXTENSION));
-                $extensiones_permitidas = array("jpg", "jpeg", "png");
-
-                if (in_array($extension, $extensiones_permitidas)) {
-                    $nombre_unico = uniqid() . "." . $extension;
-                    $ruta_final = $directorio_destino . $nombre_unico;
-
-                    if (move_uploaded_file($_FILES["imagen"]["tmp_name"], $ruta_final)) {
-                        $nombre_imagen_final = $nombre_unico;
-                    } else {
-                        $mensaje = "Error al mover la imagen a la carpeta 'img'.";
-                        $tipo_mensaje = "error";
-                        $error_subida = true;
-                    }
-                } else {
-                    $mensaje = "Formato de imagen no válido. Solo JPG o PNG.";
-                    $tipo_mensaje = "error";
-                    $error_subida = true;
-                }
+            if (move_uploaded_file($_FILES["imagen"]["tmp_name"], $ruta_final)) {
+                $nombre_imagen_final = $nombre_unico;
+            } else {
+                $mensaje = "Error al mover la imagen a la carpeta 'img'.";
+                $tipo_mensaje = "error";
+                $error_subida = true;
             }
-
-            if (!$error_subida) {
-                $sql = "INSERT INTO Personajes (nombre, descripcion, rol, imagen) VALUES (?, ?, ?, ?)";
-                
-                $stmt = mysqli_prepare($conexion, $sql);
-                
-                
-                mysqli_stmt_bind_param($stmt, "ssss", $nombre, $descripcion, $rol, $nombre_imagen_final);
-                
-                if (mysqli_stmt_execute($stmt)) {
-                    $mensaje = "¡Personaje registrado correctamente!";
-                    $tipo_mensaje = "success";
-                } else {
-                    $mensaje = "Error al guardar: " . mysqli_stmt_error($stmt);
-                    $tipo_mensaje = "error";
-                }
-                mysqli_stmt_close($stmt);
-                
-            }
-            mysqli_close($conexion);
         }
+
+        if (!$error_subida) {
+            $sql = "INSERT INTO Personajes (nombre, descripcion, rol, imagen) VALUES (?, ?, ?, ?)";
+            
+            $stmt = mysqli_prepare($conexion, $sql);
+            mysqli_stmt_bind_param($stmt, "ssss", $nombre, $descripcion, $rol, $nombre_imagen_final);
+            
+            if (mysqli_stmt_execute($stmt)) {
+                $mensaje = "¡Personaje registrado correctamente!";
+                $tipo_mensaje = "success";
+            } else {
+                $mensaje = "Error al guardar: " . mysqli_stmt_error($stmt);
+                $tipo_mensaje = "error";
+            }
+            mysqli_stmt_close($stmt);
+            
+        }
+        mysqli_close($conexion);
+        
     }
 ?>
 <!DOCTYPE html>
