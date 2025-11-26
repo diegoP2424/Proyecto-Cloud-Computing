@@ -215,23 +215,25 @@
                 <div class="char-card">
                     <div class="card-img-container">
                         <?php 
+                            // Aseguramos que la ruta de la imagen sea segura
                             $ruta_imagen = "img/" . $pj['imagen'];
-                            
                             if(empty($pj['imagen'])) { $ruta_imagen = "img/default.jpg"; }
                         ?>
-                        <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo $pj['nombre']; ?>" class="card-img"/>
                         
-                        <span class="role-badge role-<?php echo $pj['rol']; ?>">
-                            <?php echo $pj['rol']; ?>
+                        <img src="<?php echo htmlspecialchars($ruta_imagen); ?>" 
+                            alt="<?php echo htmlspecialchars($pj['nombre'], ENT_QUOTES); ?>" 
+                            class="card-img"/>
+                        
+                        <span class="role-badge role-<?php echo htmlspecialchars($pj['rol']); ?>">
+                            <?php echo htmlspecialchars($pj['rol']); ?>
                         </span>
                     </div>
 
                     <div class="card-body">
-                        <h2 class="char-name"><?php echo $pj['nombre']; ?></h2>
+                        <h2 class="char-name"><?php echo htmlspecialchars($pj['nombre']); ?></h2>
+                        
                         <p class="char-desc">
-                            <?php 
-                                echo $pj['descripcion'];
-                            ?>
+                            <?php echo htmlspecialchars($pj['descripcion']); ?>
                         </p>
                     </div>
                 </div>

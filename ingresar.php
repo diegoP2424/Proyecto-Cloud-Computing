@@ -15,9 +15,10 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conexion = mysqli_connect("localhost", "root", "", "proyecto_cc", 3306);
 
-        $nombre = trim($_POST["nombre"]);
-        $rol = $_POST["rol"];
-        $descripcion = trim($_POST["descripcion"]);
+       
+        $nombre = htmlspecialchars(trim($_POST["nombre"]), ENT_QUOTES, 'UTF-8');
+        $rol = htmlspecialchars($_POST["rol"], ENT_QUOTES, 'UTF-8');
+        $descripcion = htmlspecialchars(trim($_POST["descripcion"]), ENT_QUOTES, 'UTF-8');
         
         $nombre_imagen_final = "default.jpg"; 
         $directorio_destino = "img/";
@@ -53,7 +54,7 @@
                 $tipo_mensaje = "error";
             }
             mysqli_stmt_close($stmt);
-            
+           
         }
         mysqli_close($conexion);
         
